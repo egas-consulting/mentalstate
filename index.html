@@ -250,8 +250,6 @@
 
 
 
-
-}
   </style>
 </head>
 
@@ -664,41 +662,39 @@ for (let i = 0; i < 6; i++) {
 
 
         // Function to draw all charts based on filtered data
-        function drawVisualization(filteredData) {
-      const gridContainer = document.getElementById('grid-container');
-      gridContainer.innerHTML = ''; // Clear previous charts
+function drawVisualization(filteredData) {
+    const gridContainer = document.getElementById('grid-container');
+    gridContainer.innerHTML = ''; // Clear previous charts
 
-      if (filteredData.length === 0) {
+    if (filteredData.length === 0) {
         gridContainer.innerHTML = '<p style="color: #ffffff; grid-column: 1 / -1; text-align: center;">No charts to display for the selected compound value.</p>';
         return;
-      }
+    }
 
-      // Sort data in descending order based on compoundValue
-      const sortedData = filteredData.slice().sort((a, b) => b.compoundValue - a.compoundValue);
-      
-      // Debug: Log sorted data to verify order
-      console.log("Sorted Data:", sortedData);
-
-      // Define sizeScale with a fixed domain from 0 to 40%
-      const sizeScale = d3.scaleLinear()
+    // Sort data in descending order based on compoundValue
+    const sortedData = [...filteredData].sort((a, b) => b.compoundValue - a.compoundValue);
+    
+    // Define sizeScale with a fixed domain from 0 to 40%
+    const sizeScale = d3.scaleLinear()
         .domain([0, 40])
         .range([0.6, 0.95]);
 
-      sortedData.forEach(d => {
+    sortedData.forEach(d => {
         const chartDiv = document.createElement('div');
         chartDiv.className = 'chart-container';
 
         // Create and append country label
         const labelDiv = document.createElement('div');
         labelDiv.className = 'country-label';
-        labelDiv.textContent = d.country;
+        labelDiv.textContent = `${d.country} (${d.compoundValue})`; // Added compoundValue for debugging
         chartDiv.appendChild(labelDiv);
 
         // Append SVG chart
         gridContainer.appendChild(chartDiv);
         drawChart(chartDiv, d, sizeScale);
-      });
-    }
+    });
+}
+
 
     function initializeSlider() {
   const slider = document.getElementById('compoundSlider');
