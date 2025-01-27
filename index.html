@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Visualizing the Mental State of the World</title>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- D3.js Library -->
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  
+  <style>
+    body {
+      font-family: 'Roboto', Arial, Helvetica, sans-serif;
+      background-color: #42342F;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Header Section */
+    .header {
+      max-width: 1200px;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 0 20px;
+    }
+
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 500;
+      margin-bottom: 10px;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    .header p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #dddddd;
+      font-weight: 400;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    /* Hyperlink Styling */
+    .header p a {
+      color: #daba90;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
+    .header p a:hover {
+      color: #ffffff;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+      .header p {
+        font-size: 1rem;
+      }
+      
+    }
+
+    /* Grid Container for Charts */
+    .grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Changed from 250px to 300px */
+  gap: 20px;
+  padding: 20px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+    /* Individual Chart Container */
+    .chart-container {
+  background-color: #42342F;
+  padding: 30px; /* Changed from 15px to 30px */
+  border-radius: 8px;
+  box-shadow: 0 0px 0px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+    /* Country Label */
+    .country-label {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 10px;
+      text-align: center;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    /* SVG Styling */
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* Tooltip Styling */
+    #tooltip {
+      position: absolute;
+      background-color: rgba(44, 19, 19, 0.85);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 4px;
+      pointer-events: none;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 1000;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    /* Color Legend Styling */
+.color-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  padding: 0 20px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+.legend-label {
+  font-size: 0.7rem;
+  color: #ffffff;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Responsive adjustment for legend */
+@media (max-width: 768px) {
+  .color-legend {
+    gap: 15px;
+  }
+  
+  .legend-label {
+    font-size: 0.8rem;
+  }
+  
+  .legend-color {
+    width: 15px;
+    height: 15px;
+  }
+}
+  </style>
+</head>
+
+<body>
+    <!-- Header Section -->
+<div class="header">
+    <h1>Visualizing the Mental State of the World</h1>
+    <p>
+      Using data from the <a href="https://mentalstateoftheworld.report/">2023 Mental State of the World Report</a>, six variables are represented: <strong>% Distressed</strong>, <strong>% Struggling</strong>, <strong>% Enduring</strong>, <strong>% Managing</strong>, <strong>% Succeeding</strong>, and <strong>% Thriving</strong>. The <strong>Average MHQ Score</strong> is depicted by the size of each small multiple, providing a clear visualization of global mental health trends.
+    </p>
+  </div>
+
+  <!-- Color Legend -->
+<div class="color-legend">
+    <div class="legend-item">
+      <span class="legend-color" style="background-color: #A5C7E3;"></span>
+      <span class="legend-label">% Distressed</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color" style="background-color: #B3D0AD;"></span>
+      <span class="legend-label">% Struggling</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color" style="background-color: #EFDC94;"></span>
+      <span class="legend-label">% Enduring</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color" style="background-color: #E2C0A5;"></span>
+      <span class="legend-label">% Managing</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color" style="background-color: #E8A59D;"></span>
+      <span class="legend-label">% Succeeding</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color" style="background-color: #DF90B2;"></span>
+      <span class="legend-label">% Thriving</span>
+    </div>
+  </div>
+  
+  <!-- Tooltip -->
+  <div id="tooltip"></div>
+  
+  <!-- Grid Container for Charts -->
+  <div class="grid-container" id="grid-container">
+    <!-- Individual chart containers will be appended here -->
+  </div>
+  
+  
+    <script>
+      // Sample Data (Ensure all compoundValue are <= 40)
+      const data = [
+      { country: "Algeria", values: [4.22, 20.30, 15.00, 25.13, 27.24, 8.12], compoundValue: 38 },
+      { country: "Angola", values: [5.31, 21.57, 14.23, 20.62, 26.81, 11.48], compoundValue: 35 },
+      { country: "Argentina", values: [4.89, 19.50, 12.85, 19.84, 29.00, 13.92], compoundValue: 40 },
+      { country: "Armenia", values: [2.89, 15.65, 11.87, 24.83, 34.51, 10.26], compoundValue: 32 },
+      { country: "Australia", values: [6.71, 26.16, 15.03, 20.44, 20.98, 10.68], compoundValue: 28 },
+      { country: "Azerbaijan", values: [3.25, 15.34, 22.48, 25.55, 27.52, 5.87], compoundValue: 30 },
+      { country: "Bangladesh", values: [5.24, 21.00, 15.40, 23.38, 26.84, 8.15], compoundValue: 25 },
+      { country: "Belarus", values: [2.97, 20.47, 12.59, 31.32, 26.30, 6.35], compoundValue: 29 },
+      { country: "Belgium", values: [4.64, 19.92, 15.47, 22.86, 28.87, 8.24], compoundValue: 33 },
+      { country: "Bolivia", values: [6.67, 23.06, 13.94, 18.93, 26.45, 10.95], compoundValue: 27 },
+      { country: "Brazil", values: [8.46, 25.52, 14.44, 18.28, 21.84, 11.46], compoundValue: 22 },
+      { country: "Cameroon", values: [2.83, 18.58, 14.68, 28.41, 29.64, 5.86], compoundValue: 30 },
+      { country: "Canada", values: [4.31, 21.31, 13.72, 21.18, 26.91, 12.58], compoundValue: 34 },
+      { country: "Chile", values: [4.80, 20.04, 13.87, 21.76, 25.92, 13.62], compoundValue: 29 },
+      { country: "Colombia", values: [5.78, 18.88, 11.83, 16.31, 25.96, 21.24], compoundValue: 32 },
+      { country: "Costa Rica", values: [5.86, 15.50, 12.19, 16.32, 28.38, 21.75], compoundValue: 35 },
+      { country: "Cote d'Ivoire", values: [3.17, 17.71, 15.20, 25.67, 30.61, 7.65], compoundValue: 31 },
+      { country: "Democratic Republic of the Congo", values: [2.85, 19.18, 13.27, 23.63, 31.73, 9.33], compoundValue: 34 },
+      { country: "Dominican Republic", values: [4.09, 14.99, 8.48, 16.92, 30.68, 24.84], compoundValue: 40 },
+      { country: "Ecuador", values: [6.22, 19.31, 11.49, 17.11, 26.65, 19.22], compoundValue: 29 },
+      { country: "Egypt", values: [6.11, 23.59, 16.18, 22.74, 23.61, 7.77], compoundValue: 25 },
+      { country: "El Salvador", values: [4.62, 17.91, 10.35, 15.74, 27.23, 24.15], compoundValue: 34 },
+      { country: "France", values: [4.07, 17.85, 14.00, 24.80, 31.17, 8.10], compoundValue: 28 },
+      { country: "Georgia", values: [2.55, 14.46, 9.30, 34.57, 30.94, 8.17], compoundValue: 36 },
+      { country: "Germany", values: [4.37, 22.37, 15.99, 22.52, 25.86, 8.89], compoundValue: 30 },
+      { country: "Guatemala", values: [6.24, 18.81, 13.68, 19.72, 24.67, 16.87], compoundValue: 27 },
+      { country: "Honduras", values: [4.47, 17.35, 12.07, 17.62, 27.97, 20.51], compoundValue: 33 },
+      { country: "India", values: [7.21, 23.20, 13.83, 19.91, 24.23, 11.61], compoundValue: 28 },
+      { country: "Iraq", values: [6.57, 22.14, 15.95, 24.04, 23.14, 8.16], compoundValue: 26 },
+      { country: "Ireland", values: [5.20, 26.01, 14.80, 23.49, 20.09, 10.42], compoundValue: 30 },
+      { country: "Israel", values: [3.13, 16.47, 13.21, 21.45, 32.17, 13.56], compoundValue: 34 },
+      { country: "Italy", values: [2.76, 14.25, 12.38, 24.66, 33.28, 12.68], compoundValue: 31 },
+      { country: "Jordan", values: [4.74, 18.64, 14.85, 22.72, 27.93, 11.12], compoundValue: 29 },
+      { country: "Kazakhstan", values: [4.95, 22.29, 16.41, 22.55, 26.52, 7.28], compoundValue: 28 },
+      { country: "Kenya", values: [4.49, 18.13, 14.99, 19.10, 28.40, 14.89], compoundValue: 32 },
+      { country: "Kyrgyzstan", values: [4.12, 16.62, 23.98, 24.22, 25.72, 5.34], compoundValue: 25 },
+      { country: "Malaysia", values: [2.65, 16.52, 9.62, 17.51, 36.14, 17.57], compoundValue: 38 },
+      { country: "Mexico", values: [6.23, 19.85, 11.25, 16.10, 24.71, 21.85], compoundValue: 33 },
+      { country: "Morocco", values: [4.24, 20.65, 15.87, 23.06, 27.09, 9.09], compoundValue: 29 },
+      { country: "Mozambique", values: [4.21, 19.48, 13.73, 21.94, 27.87, 12.76], compoundValue: 31 },
+      { country: "New Zealand", values: [8.30, 21.27, 14.52, 18.29, 23.60, 14.02], compoundValue: 26 },
+      { country: "Nicaragua", values: [5.98, 17.21, 11.92, 18.41, 28.00, 18.47], compoundValue: 34 },
+      { country: "Nigeria", values: [3.29, 13.77, 12.59, 21.52, 32.78, 16.05], compoundValue: 35 },
+      { country: "Pakistan", values: [6.07, 21.47, 15.03, 21.93, 25.95, 9.55], compoundValue: 30 },
+      { country: "Panama", values: [4.09, 16.33, 11.62, 17.10, 27.64, 23.23], compoundValue: 38 },
+      { country: "Paraguay", values: [5.57, 19.11, 13.22, 19.95, 27.17, 14.98], compoundValue: 29 },
+      { country: "Peru", values: [5.42, 18.44, 12.01, 17.22, 27.49, 19.43], compoundValue: 31 },
+      { country: "Philippines", values: [3.68, 17.80, 12.48, 20.26, 28.22, 17.57], compoundValue: 32 },
+      { country: "Portugal", values: [3.70, 17.84, 14.15, 23.10, 28.40, 12.81], compoundValue: 29 },
+      { country: "Puerto Rico", values: [6.95, 16.10, 9.82, 18.20, 24.94, 24.00], compoundValue: 34 },
+      { country: "Republic of Moldova", values: [1.20, 18.59, 13.11, 24.76, 33.63, 8.70], compoundValue: 28 },
+      { country: "Saudi Arabia", values: [5.34, 19.78, 13.23, 21.92, 27.20, 12.54], compoundValue: 27 },
+      { country: "Singapore", values: [3.40, 18.84, 12.07, 20.63, 31.84, 13.22], compoundValue: 33 },
+      { country: "South Africa", values: [8.00, 26.95, 14.27, 19.49, 21.64, 9.64], compoundValue: 22 },
+      { country: "Spain", values: [5.43, 22.07, 14.18, 21.40, 25.76, 11.16], compoundValue: 28 },
+      { country: "Sri Lanka", values: [2.18, 12.24, 12.29, 21.96, 33.10, 18.23], compoundValue: 34 },
+      { country: "Sudan", values: [5.35, 18.92, 15.12, 24.72, 25.84, 10.05], compoundValue: 29 },
+      { country: "Syria", values: [6.52, 19.77, 14.88, 21.81, 26.30, 10.72], compoundValue: 27 },
+      { country: "Tajikistan", values: [5.24, 20.89, 21.65, 28.21, 17.66, 6.36], compoundValue: 25 },
+      { country: "Tanzania", values: [3.82, 15.28, 10.55, 17.82, 28.80, 23.73], compoundValue: 38 },
+      { country: "Trinidad and Tobago", values: [4.93, 15.81, 12.45, 19.15, 28.76, 18.90], compoundValue: 35 },
+      { country: "Tunisia", values: [4.11, 18.48, 15.51, 24.87, 28.63, 8.41], compoundValue: 26 },
+      { country: "Ukraine", values: [4.50, 20.41, 14.38, 29.97, 24.18, 6.57], compoundValue: 30 },
+      { country: "United Arab Emirates", values: [5.40, 19.59, 13.84, 21.62, 28.41, 11.15], compoundValue: 27 },
+      { country: "United Kingdom", values: [7.84, 27.17, 15.54, 18.97, 20.83, 9.66], compoundValue: 22 },
+      { country: "United States", values: [4.86, 20.29, 13.30, 19.41, 24.94, 17.20], compoundValue: 31 },
+      { country: "Uruguay", values: [3.45, 16.92, 10.66, 20.51, 31.16, 17.32], compoundValue: 35 },
+      { country: "Uzbekistan", values: [4.10, 27.53, 21.64, 20.03, 22.09, 4.62], compoundValue: 25 },
+      { country: "Venezuela", values: [3.96, 15.71, 11.55, 18.60, 30.90, 19.29], compoundValue: 34 },
+      { country: "Yemen", values: [4.50, 23.03, 16.30, 23.50, 24.74, 7.93], compoundValue: 26 },
+      { country: "Zimbabwe", values: [2.67, 18.21, 13.53, 24.34, 27.73, 13.52], compoundValue: 38 }
+    ];
+  
+      const indicators = ["% Distressed", "% Struggling", "% Enduring", "% Managing", "% Succeeding", "% Thriving"];
+      const colors = ["#A5C7E3", "#B3D0AD", "#EFDC94", "#E2C0A5", "#E8A59D", "#DF90B2"];
+  
+      // Tooltip setup
+      const tooltip = d3.select("#tooltip");
+  
+
+        // Function to draw individual chart
+        function drawChart(container, d, sizeScale) {
+      const baseSize = 220; // Base size for consistency
+      const scaleFactor = sizeScale(d.compoundValue);
+      const width = baseSize;
+      const height = baseSize;
+
+      const svg = d3.select(container)
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("viewBox", `0 0 ${baseSize} ${baseSize}`)
+        .attr("preserveAspectRatio", "xMidYMid meet");
+
+      const apexDist = 20;
+      const side = 90;
+      const altitude = side * Math.sqrt(3) / 2;
+      const outerDist = apexDist + altitude;
+
+      // Original vertex angles (axes)
+      const axisAngles = [
+    -Math.PI / 2,         // Distressed (top)
+    -Math.PI / 6,         // Struggling (top right)
+    Math.PI / 6,          // Enduring (right)
+    Math.PI / 2,          // Managing (bottom)
+    5 * Math.PI / 6,      // Succeeding (bottom left)
+    -5 * Math.PI / 6      // Thriving (top left)
+];
+
+      const centerX = baseSize / 2;
+      const centerY = baseSize / 2;
+
+      // Create a group for the triangles (no rotation)
+      const trianglesGroup = svg.append("g")
+        .attr("transform", `translate(${centerX}, ${centerY}) scale(${scaleFactor})`);
+// Draw Triangles (Hexagon Sides)
+for (let i = 0; i < 6; i++) {
+    const angle = axisAngles[i];
+    const ax = apexDist * Math.cos(angle);
+    const ay = apexDist * Math.sin(angle);
+    const cornerAngle = Math.PI / 6;
+    const xLeft = ax + side * Math.cos(angle + cornerAngle);
+    const yLeft = ay + side * Math.sin(angle + cornerAngle);
+    const xRight = ax + side * Math.cos(angle - cornerAngle);
+    const yRight = ay + side * Math.sin(angle - cornerAngle);
+
+    // Calculate gradient vector based on triangle orientation
+    const gradientAngle = angle + Math.PI / 2;
+    const x1 = 50 + 40 * Math.cos(angle);
+    const y1 = 50 + 40 * Math.sin(angle);
+    const x2 = 50 - 40 * Math.cos(angle);
+    const y2 = 50 - 40 * Math.sin(angle);
+
+    // Create gradient
+    const gradientId = `gradient-${i}`;
+    const gradient = trianglesGroup.append("defs")
+        .append("linearGradient")
+        .attr("id", gradientId)
+        .attr("x1", `${x1}%`)
+        .attr("y1", `${y1}%`)
+        .attr("x2", `${x2}%`)
+        .attr("y2", `${y2}%`);
+
+    // Create gradient stops (reversed opacity)
+    gradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", colors[i])
+        .attr("stop-opacity", "0");
+
+    gradient.append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", colors[i])
+        .attr("stop-opacity", "1");
+
+    // Draw triangle with gradient and add hover events
+    trianglesGroup.append("polygon")
+        .attr("points", [[ax, ay], [xLeft, yLeft], [xRight, yRight]].map(pt => pt.join(",")).join(" "))
+        .attr("fill", `url(#${gradientId})`)
+        .attr("stroke", "none")
+        .style("cursor", "pointer")
+        .on("mouseover", (event) => {
+            tooltip.style("opacity", 1)
+                .html(`<strong>${d.country}</strong><br/>${indicators[i]}: ${d.values[i]}%`);
+        })
+        .on("mousemove", (event) => {
+            tooltip.style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", () => tooltip.style("opacity", 0));
+
+    // ... rest of the code remains the same ...
+
+
+    // Calculate position and rotation for label
+    const labelAngle = angle + Math.PI / 2;
+    const labelRadius = apexDist + side * 0.9;
+    const labelX = labelRadius * Math.cos(angle);
+    const labelY = labelRadius * Math.sin(angle);
+    
+    // Adjust rotation based on position (top or bottom half)
+    let rotation = (angle * 180 / Math.PI) + 90;
+    if (labelY > 0) { // If label is in bottom half
+        rotation += 180;
+    }
+
+    // Add label
+    trianglesGroup.append("text")
+        .attr("x", labelX)
+        .attr("y", labelY)
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "middle")
+        .attr("fill", "#ffffff")
+        .attr("font-size", "8px")
+        .attr("transform", `rotate(${rotation},${labelX},${labelY})`)
+        .text(indicators[i]);
+}
+
+
+
+      // Create a separate group for the circles
+      const hexGroup = svg.append("g")
+        .attr("transform", `translate(${centerX}, ${centerY}) scale(${scaleFactor})`);
+
+      // Draw Rings at 10%, 20%, 30%, 40%
+      const totalSegments = 4;
+      for (let i = 1; i <= totalSegments; i++) {
+        const ringR = apexDist + (i / totalSegments) * (outerDist - apexDist);
+        
+        // Draw circle 
+        hexGroup.append("circle")
+            .attr("cx", 0)
+            .attr("cy", 0)
+            .attr("r", ringR)
+            .attr("fill", "none")
+            .attr("stroke", "#42342F")
+            .attr("stroke-width", 0.4);
+        
+        // Add labels for each ring
+        hexGroup.append("text")
+            .attr("x", 5)
+            .attr("y", -ringR + 5)
+            .attr("fill", "#271E1B")
+            .attr("font-size", "8px")
+            .text(`${i * 10}%`);
+      }
+
+      // Create a group for the data polygon
+      const dataGroup = svg.append("g")
+        .attr("transform", `translate(${centerX}, ${centerY}) scale(${scaleFactor})`);
+
+      // Calculate data polygon points
+      const dataPoints = d.values.map((val, i) => {
+        const pointRadius = apexDist + (val / 40) * (outerDist - apexDist);
+        return {
+          x: Math.cos(axisAngles[i]) * pointRadius,
+          y: Math.sin(axisAngles[i]) * pointRadius,
+          value: val,
+          indicator: indicators[i]
+        };
+      });
+
+      // Draw Data Polygon
+      dataGroup.append("polygon")
+        .attr("points", dataPoints.map(pt => `${pt.x},${pt.y}`).join(" "))
+        .attr("fill", "rgba(39, 30, 27, 0.8)")
+        .attr("stroke", "#42342F")
+        .attr("stroke-width", 1);
+
+      // Draw Data Points
+      dataPoints.forEach((pt) => {
+        dataGroup.append("circle")
+          .attr("cx", pt.x)
+          .attr("cy", pt.y)
+          .attr("r", 3)
+          .attr("fill", "#42342F")
+          .style("cursor", "pointer")
+          .on("mouseover", (event) => {
+            tooltip.style("opacity", 1)
+              .html(`<strong>${d.country}</strong><br/>${pt.indicator}: ${pt.value}%`);
+          })
+          .on("mousemove", (event) => {
+            tooltip.style("left", (event.pageX + 10) + "px")
+              .style("top", (event.pageY - 28) + "px");
+          })
+          .on("mouseout", () => tooltip.style("opacity", 0));
+      });
+    }
+
+
+        // Function to draw all charts based on filtered data
+        function drawVisualization(filteredData) {
+      const gridContainer = document.getElementById('grid-container');
+      gridContainer.innerHTML = ''; // Clear previous charts
+
+      if (filteredData.length === 0) {
+        gridContainer.innerHTML = '<p style="color: #ffffff; grid-column: 1 / -1; text-align: center;">No charts to display for the selected compound value.</p>';
+        return;
+      }
+
+      // Sort data in descending order based on compoundValue
+      const sortedData = filteredData.slice().sort((a, b) => b.compoundValue - a.compoundValue);
+      
+      // Debug: Log sorted data to verify order
+      console.log("Sorted Data:", sortedData);
+
+      // Define sizeScale with a fixed domain from 0 to 40%
+      const sizeScale = d3.scaleLinear()
+        .domain([0, 40])
+        .range([0.6, 0.95]);
+
+      sortedData.forEach(d => {
+        const chartDiv = document.createElement('div');
+        chartDiv.className = 'chart-container';
+
+        // Create and append country label
+        const labelDiv = document.createElement('div');
+        labelDiv.className = 'country-label';
+        labelDiv.textContent = d.country;
+        chartDiv.appendChild(labelDiv);
+
+        // Append SVG chart
+        gridContainer.appendChild(chartDiv);
+        drawChart(chartDiv, d, sizeScale);
+      });
+    }
+
+    function initializeSlider() {
+  const slider = document.getElementById('compoundSlider');
+  const sliderValueDisplay = document.getElementById('sliderValue');
+  const sliderMinLabel = document.getElementById('sliderMinLabel');
+  const sliderMaxLabel = document.getElementById('sliderMaxLabel');
+
+  // Configure the slider with new range
+  slider.min = 47;
+  slider.max = 91;
+  slider.step = 0.1;
+  slider.value = 47;
+
+  // Update the display initially
+  sliderValueDisplay.textContent = parseFloat(slider.value).toFixed(1);
+
+  // Update slider scale labels
+  sliderMinLabel.textContent = "47";
+  sliderMaxLabel.textContent = "91";
+
+  // Initial visualization with all data
+  drawVisualization(data);
+
+  // Event listener for slider input
+  slider.addEventListener('input', () => {
+    const currentValue = parseFloat(slider.value);
+    sliderValueDisplay.textContent = currentValue.toFixed(1);
+    const filteredData = data.filter(d => d.compoundValue >= currentValue);
+    drawVisualization(filteredData);
+  });
+}
+
+
+    // Initialize everything on page load
+document.addEventListener('DOMContentLoaded', () => {
+  drawVisualization(data);
+});
+
+
+    // Redraw on window resize with debounce to improve performance
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        // Get current slider value
+        const slider = document.getElementById('compoundSlider');
+        const currentValue = parseFloat(slider.value);
+
+        // Filter data based on current slider value
+        const filteredData = data.filter(d => d.compoundValue >= currentValue);
+
+        // Redraw visualization with filtered data
+        drawVisualization(filteredData);
+      }, 200);
+    });
+  </script>
+</body>
+</html>
+
