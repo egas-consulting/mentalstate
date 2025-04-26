@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Visualizing the Mental State of the World</title>
   
-  <!-- Google Fonts -->
+  
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
   
-  <!-- D3.js Library -->
+  
   <script src="https://d3js.org/d3.v6.min.js"></script>
   
   <style>
@@ -24,7 +24,7 @@
       align-items: center;
     }
 
-    /* Header Section */
+    
     .header {
       max-width: 1200px;
       width: 100%;
@@ -50,7 +50,6 @@
 }
     
 
-    /* Hyperlink Styling */
     .header p a {
       color: #daba90;
       text-decoration: underline;
@@ -61,7 +60,6 @@
       color: #ffffff;
     }
 
-    /* Responsive adjustments */
     @media (max-width: 768px) {
       .header h1 {
         font-size: 2rem;
@@ -72,7 +70,6 @@
       
     }
 
-    /* Grid Container for Charts */
     .grid-container {
       display: grid;
       grid-template-columns: repeat(3, 1fr); /* Fixed 3 columns instead of auto-fit */
@@ -82,7 +79,7 @@
       max-width: 1200px;
     }
 
-    /* Responsive adjustment for grid */
+    
     @media (max-width: 1200px) {
       .grid-container {
         grid-template-columns: repeat(2, 1fr);
@@ -95,10 +92,10 @@
       }
     }
 
-    /* Individual Chart Container */
+    
     .chart-container {
   background-color: #42342F;
-  padding: 30px; /* Changed from 15px to 30px */
+  padding: 30px; 
   border-radius: 8px;
   box-shadow: 0 0px 0px rgba(0,0,0,0.3);
   display: flex;
@@ -107,7 +104,7 @@
   position: relative;
 }
 
-    /* Country Label */
+    
     .country-label {
       font-size: 1.1rem;
       font-weight: 500;
@@ -116,14 +113,14 @@
       font-family: 'Open Sans', sans-serif;
     }
 
-    /* SVG Styling */
+    
     svg {
       display: block;
       width: 100%;
       height: auto;
     }
 
-    /* Tooltip Styling */
+    
     #tooltip {
       position: absolute;
       background-color: rgba(44, 19, 19, 0.85);
@@ -138,7 +135,7 @@
       font-family: 'Open Sans', sans-serif;
     }
 
-    /* Color Legend Styling */
+    
 .color-legend {
   display: flex;
   flex-wrap: wrap;
@@ -166,7 +163,7 @@
   font-family: 'Roboto', sans-serif;
 }
 
-/* Responsive adjustment for legend */
+
 @media (max-width: 768px) {
   .color-legend {
     gap: 15px;
@@ -185,7 +182,7 @@
   .country-selector {
     width: 100%;
     max-width: 600px;
-    margin: 0 auto 15px; /* Reduced from 30px */
+    margin: 0 auto 15px; 
     padding: 0 20px;
 }
 
@@ -202,7 +199,7 @@
 #countrySelect {
     width: 100%;
     height: 200px;
-    background: #3d312c; /* Darker shade of brown */
+    background: #3d312c; 
     color: #ffffff;
     border: 0.1px solid #ffffff;
     border-radius: 4px;
@@ -211,7 +208,7 @@
 
 #countrySelect option {
     padding: 5px;
-    background: #382923; /* Ensure options have same background */
+    background: #382923; 
     color: #ffffff;
 }
 
@@ -254,7 +251,7 @@
 </head>
 
 <body>
-    <!-- Header Section -->
+    
 <div class="header">
     <h1>Visualizing the Mental State of the World</h1>
     <p>
@@ -262,7 +259,7 @@
     </p>
   </div>
 
-  <!-- Color Legend -->
+  
 <div class="color-legend">
     <div class="legend-item">
       <span class="legend-color" style="background-color: #A5C7E3;"></span>
@@ -290,14 +287,14 @@
     </div>
   </div>
 
-<!-- Country Selector -->
+
 <div class="country-selector">
   <div class="selector-header">
       <h3>Select Countries</h3>
       <button id="clearSelection" class="clear-btn">Clear All</button>
   </div>
   <select id="countrySelect" multiple>
-      <!-- Countries will be populated via JavaScript -->
+      
   </select>
   
 </div>
@@ -306,17 +303,17 @@
 
 
   
-  <!-- Tooltip -->
+  
   <div id="tooltip"></div>
   
-  <!-- Grid Container for Charts -->
+  
   <div class="grid-container" id="grid-container">
-    <!-- Individual chart containers will be appended here -->
+    
   </div>
   
   
     <script>
-      // Sample Data (Ensure all compoundValue are <= 40)
+      
       const data = [
     { country: "Algeria", values: [4.22, 20.30, 15.00, 25.13, 27.24, 8.12], compoundValue: 63.76 },
     { country: "Angola", values: [5.31, 21.57, 14.23, 20.62, 26.81, 11.48], compoundValue: 64.27 },
@@ -395,7 +392,7 @@
       const indicators = ["% Distressed", "% Struggling", "% Enduring", "% Managing", "% Succeeding", "% Thriving"];
       const colors = ["#A5C7E3", "#B3D0AD", "#EFDC94", "#E2C0A5", "#E8A59D", "#DF90B2"];
   
-      // Tooltip setup
+      
       const tooltip = d3.select("#tooltip");
 
 
@@ -404,22 +401,22 @@
     const clearButton = document.getElementById('clearSelection');
     let previousSelections = [];
     
-    // Populate selector with countries
+    
     const countries = [...new Set(data.map(d => d.country))].sort();
     
-    // Add all countries option
+    
     const allOption = document.createElement('option');
     allOption.value = 'all';
     allOption.text = 'All Countries';
     countrySelect.appendChild(allOption);
     
-    // Add separator
+    
     const separator = document.createElement('option');
     separator.disabled = true;
     separator.text = '──────────';
     countrySelect.appendChild(separator);
     
-    // Add individual countries
+    
     countries.forEach(country => {
         const option = document.createElement('option');
         option.value = country;
@@ -427,17 +424,17 @@
         countrySelect.appendChild(option);
     });
 
-    // Handle selection changes
+    
     countrySelect.addEventListener('change', (event) => {
         const selectedOptions = [...countrySelect.selectedOptions];
         
-        // Check if "All Countries" was selected
+        
         if (selectedOptions.some(option => option.value === 'all')) {
             drawVisualization(data);
             return;
         }
         
-        // Limit to 10 selections
+        
         if (selectedOptions.length > 10) {
             // Restore previous selections
             previousSelections.forEach(value => {
@@ -447,10 +444,10 @@
             return;
         }
         
-        // Update previous selections
+        
         previousSelections = selectedOptions.map(option => option.value);
         
-        // Filter and redraw visualization
+        
         const selectedCountries = selectedOptions.map(option => option.value);
         const filteredData = selectedCountries.length > 0 
             ? data.filter(d => selectedCountries.includes(d.country))
@@ -459,7 +456,7 @@
         drawVisualization(filteredData);
     });
 
-    // Clear selection button
+    
     clearButton.addEventListener('click', () => {
         [...countrySelect.options].forEach(option => {
             option.selected = false;
@@ -473,7 +470,7 @@
 
 
 
-        // Function to draw individual chart
+        
         function drawChart(container, d, sizeScale) {
       const baseSize = 220; // Base size for consistency
       const scaleFactor = sizeScale(d.compoundValue);
@@ -492,7 +489,7 @@
       const altitude = side * Math.sqrt(3) / 2;
       const outerDist = apexDist + altitude;
 
-      // Original vertex angles (axes)
+      
       const axisAngles = [
     -Math.PI / 2,         // Distressed (top)
     -Math.PI / 6,         // Struggling (top right)
@@ -505,10 +502,10 @@
       const centerX = baseSize / 2;
       const centerY = baseSize / 2;
 
-      // Create a group for the triangles (no rotation)
+      
       const trianglesGroup = svg.append("g")
         .attr("transform", `translate(${centerX}, ${centerY}) scale(${scaleFactor})`);
-// Draw Triangles (Hexagon Sides)
+
 for (let i = 0; i < 6; i++) {
     const angle = axisAngles[i];
     const ax = apexDist * Math.cos(angle);
@@ -519,14 +516,14 @@ for (let i = 0; i < 6; i++) {
     const xRight = ax + side * Math.cos(angle - cornerAngle);
     const yRight = ay + side * Math.sin(angle - cornerAngle);
 
-    // Calculate gradient vector based on triangle orientation
+    
     const gradientAngle = angle + Math.PI / 2;
     const x1 = 50 + 40 * Math.cos(angle);
     const y1 = 50 + 40 * Math.sin(angle);
     const x2 = 50 - 40 * Math.cos(angle);
     const y2 = 50 - 40 * Math.sin(angle);
 
-    // Create gradient
+    
     const gradientId = `gradient-${i}`;
     const gradient = trianglesGroup.append("defs")
         .append("linearGradient")
@@ -536,7 +533,7 @@ for (let i = 0; i < 6; i++) {
         .attr("x2", `${x2}%`)
         .attr("y2", `${y2}%`);
 
-    // Create gradient stops (reversed opacity)
+    
     gradient.append("stop")
         .attr("offset", "0%")
         .attr("stop-color", colors[i])
@@ -547,7 +544,7 @@ for (let i = 0; i < 6; i++) {
         .attr("stop-color", colors[i])
         .attr("stop-opacity", "1");
 
-    // Draw triangle with gradient and add hover events
+    
     trianglesGroup.append("polygon")
         .attr("points", [[ax, ay], [xLeft, yLeft], [xRight, yRight]].map(pt => pt.join(",")).join(" "))
         .attr("fill", `url(#${gradientId})`)
@@ -563,22 +560,22 @@ for (let i = 0; i < 6; i++) {
         })
         .on("mouseout", () => tooltip.style("opacity", 0));
 
-    // ... rest of the code remains the same ...
+    
 
 
-    // Calculate position and rotation for label
+    
     const labelAngle = angle + Math.PI / 2;
     const labelRadius = apexDist + side * 0.9;
     const labelX = labelRadius * Math.cos(angle);
     const labelY = labelRadius * Math.sin(angle);
     
-    // Adjust rotation based on position (top or bottom half)
+    
     let rotation = (angle * 180 / Math.PI) + 90;
     if (labelY > 0) { // If label is in bottom half
         rotation += 180;
     }
 
-    // Add label
+    
     trianglesGroup.append("text")
         .attr("x", labelX)
         .attr("y", labelY)
@@ -592,16 +589,16 @@ for (let i = 0; i < 6; i++) {
 
 
 
-      // Create a separate group for the circles
+      
       const hexGroup = svg.append("g")
         .attr("transform", `translate(${centerX}, ${centerY}) scale(${scaleFactor})`);
 
-      // Draw Rings at 10%, 20%, 30%, 40%
+      
       const totalSegments = 4;
       for (let i = 1; i <= totalSegments; i++) {
         const ringR = apexDist + (i / totalSegments) * (outerDist - apexDist);
         
-        // Draw circle 
+        
         hexGroup.append("circle")
             .attr("cx", 0)
             .attr("cy", 0)
@@ -610,7 +607,7 @@ for (let i = 0; i < 6; i++) {
             .attr("stroke", "#42342F")
             .attr("stroke-width", 0.4);
         
-        // Add labels for each ring
+        
         hexGroup.append("text")
             .attr("x", 5)
             .attr("y", -ringR + 5)
@@ -619,11 +616,11 @@ for (let i = 0; i < 6; i++) {
             .text(`${i * 10}%`);
       }
 
-      // Create a group for the data polygon
+      
       const dataGroup = svg.append("g")
         .attr("transform", `translate(${centerX}, ${centerY}) scale(${scaleFactor})`);
 
-      // Calculate data polygon points
+      
       const dataPoints = d.values.map((val, i) => {
         const pointRadius = apexDist + (val / 40) * (outerDist - apexDist);
         return {
@@ -634,14 +631,14 @@ for (let i = 0; i < 6; i++) {
         };
       });
 
-      // Draw Data Polygon
+      
       dataGroup.append("polygon")
         .attr("points", dataPoints.map(pt => `${pt.x},${pt.y}`).join(" "))
         .attr("fill", "rgba(39, 30, 27, 0.8)")
         .attr("stroke", "#42342F")
         .attr("stroke-width", 1);
 
-      // Draw Data Points
+      
       dataPoints.forEach((pt) => {
         dataGroup.append("circle")
           .attr("cx", pt.x)
@@ -662,7 +659,7 @@ for (let i = 0; i < 6; i++) {
     }
 
 
-        // Function to draw all charts based on filtered data
+        
 function drawVisualization(filteredData) {
     const gridContainer = document.getElementById('grid-container');
     gridContainer.innerHTML = ''; // Clear previous charts
@@ -672,10 +669,10 @@ function drawVisualization(filteredData) {
         return;
     }
 
-    // Sort data in descending order based on compoundValue
+    
     const sortedData = [...filteredData].sort((a, b) => b.compoundValue - a.compoundValue);
     
-    // Define sizeScale with a fixed domain from 0 to 40%
+    
     const sizeScale = d3.scaleLinear()
     .domain([47.80, 90.83])  // Changed from [0, 40] to actual range
     .range([0.6, 0.95]);
@@ -684,13 +681,13 @@ function drawVisualization(filteredData) {
         const chartDiv = document.createElement('div');
         chartDiv.className = 'chart-container';
 
-        // Create and append country label
+        
         const labelDiv = document.createElement('div');
         labelDiv.className = 'country-label';
         labelDiv.textContent = `${d.country} (${d.compoundValue})`; // Added compoundValue for debugging
         chartDiv.appendChild(labelDiv);
 
-        // Append SVG chart
+        
         gridContainer.appendChild(chartDiv);
         drawChart(chartDiv, d, sizeScale);
     });
@@ -703,23 +700,23 @@ function drawVisualization(filteredData) {
   const sliderMinLabel = document.getElementById('sliderMinLabel');
   const sliderMaxLabel = document.getElementById('sliderMaxLabel');
 
-  // Configure the slider with new range
+  
   slider.min = 47;
   slider.max = 91;
   slider.step = 0.1;
   slider.value = 47;
 
-  // Update the display initially
+  
   sliderValueDisplay.textContent = parseFloat(slider.value).toFixed(1);
 
-  // Update slider scale labels
+  
   sliderMinLabel.textContent = "47";
   sliderMaxLabel.textContent = "91";
 
-  // Initial visualization with all data
+  
   drawVisualization(data);
 
-  // Event listener for slider input
+  
   slider.addEventListener('input', () => {
     const currentValue = parseFloat(slider.value);
     sliderValueDisplay.textContent = currentValue.toFixed(1);
@@ -735,7 +732,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-    // Redraw on window resize with debounce to improve performance
+    
 let resizeTimeout;
 window.addEventListener("resize", () => {
     clearTimeout(resizeTimeout);
